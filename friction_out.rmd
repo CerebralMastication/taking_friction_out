@@ -1,0 +1,370 @@
+---
+title: "Taking the Friction out of R"
+subtitle: "(and other tools)"
+author: "JD Long"
+institute: "Why R Seminar"
+date: "updated: `r Sys.Date()`"
+output:
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(xaringanthemer)
+library(ggrepel)
+
+options(htmltools.dir.version = FALSE)
+hook_source <- knitr::knit_hooks$get('source')
+knitr::knit_hooks$set(
+  source = function(x, options) {
+    x <-
+      stringr::str_replace(x,
+                           "^[[:blank:]]?([^*].+?)[[:blank:]]*#<<[[:blank:]]*$",
+                           "*\\1")
+    hook_source(x, options)
+  }
+)
+
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+
+style_solarized_dark(
+  header_font_google = google_font("Josefin Sans"),
+  text_font_google   = google_font("Montserrat", "400", "400i"),
+  code_font_google   = google_font("Fira Mono")
+)
+```
+
+```{css, echo = FALSE}
+
+.huge .remark-code { /
+  font-size: 150% !important;
+}
+.tiny .remark-code { 
+  font-size: 50% !important;
+}
+.medium .remark-code { 
+  font-size: 75% !important;
+}
+```
+
+---
+
+background-image: url("03_images/disclaimer.png")
+background-position: center
+background-size: contain
+
+
+---
+
+# What Drives Adoption?
+
+--
+
+## Usefulness 
+
+---
+
+# What Prevents Adoption?
+
+--
+
+## Cost
+
+--
+
+### - WTF? Everything is FREE!!!!!
+
+--
+
+### - Not time. 
+
+--
+
+### - Time is the largest cost of any tool. Even paid tools. 
+
+
+---
+class: center, middle
+# A Little About Me...
+
+---
+
+background-image: url("03_images/rcookbook.png")
+background-position: center
+background-size: contain
+
+---
+
+# Free Online
+
+# https://rc2e.com 
+
+---
+
+background-image: url("03_images/twitter.png")
+background-position: center
+background-size: contain
+
+---
+
+background-image: url("03_images/spreadsheets.jpg")
+background-position: center
+background-size: contain
+
+---
+
+background-image: url("03_images/renaissancere-building.jpg")
+background-position: center
+background-size: contain
+
+---
+
+# Typical Learning Pattern
+
+--
+
+## - Classroom model
+
+--
+
+## - Start with "foundation" 
+##   (e.g. data types)
+
+--
+
+## - Build up from foundation
+
+---
+
+background-image: url("03_images/ed_concepts.png")
+background-position: center
+background-size: contain
+
+---
+
+# Think about everything you learned on your own...
+
+--
+
+## How did you learn it? 
+
+--
+
+## We learn the pieces needed to accomplish a specific end.
+
+---
+
+background-image: url("03_images/learncycle.png")
+background-position: center
+background-size: contain
+
+---
+
+# Iterating through this cycle is the single most important technical skill a knowledge worker can have today. 
+
+## The best beginner training focuses on getting a task done. 
+
+---
+
+## Tools AND Training 
+```{r echo=FALSE, out.width='65%'}
+n <- 1000
+set.seed(42)
+
+df <- tibble(curve = 'Learn Fast',
+                 x = rt(n, 100))
+df <- rbind(df, tibble(curve = 'Struggle Long',
+                           x = rnorm(n, 3, 2)))
+
+
+p <- ggplot(df, aes(x, color = curve)) +
+  stat_ecdf(geom = "step", size = 2) +
+  theme_classic(base_size = 18) +
+  theme_xaringan(background_color = "#FFFFFF") +
+  theme(
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+  ) +
+  theme(legend.position = c(0.75, 0.15)) +
+  theme(legend.title = element_blank()) +
+  labs(x = "Time", y = "Skill") +
+  geom_hline(yintercept = .25,
+             color = "orangered",
+             linetype = 2) +
+  annotate(
+    "text",
+    x = -2.2,
+    y = .29,
+    label = "Suck Threshold",
+    size = 5
+  ) +
+  geom_hline(yintercept = .75,
+             color = "forestgreen",
+             linetype = 2) +
+  annotate(
+    "text",
+    x = -1.9 ,
+    y = .79,
+    label = "Kick Ass Threshold",
+    size = 5
+  )
+p
+```
+
+---
+
+
+# How can workplaces help with this process?
+
+---
+
+background-image: url("03_images/off_ramp.jpg")
+background-position: center
+background-size: contain
+
+---
+
+# What are the big obstacles? 
+
+--
+## Environment - R, IDE, access to libraries
+
+--
+## Database Drivers - ODBC, JDBC, DB Specific
+
+--
+## Specialized Templates for output/input
+
+--
+## Hosted solutions are a... solution!  
+
+- Jupyter
+- R Studio 
+
+--
+## Internal & External Training
+
+---
+
+# Having `!=` Using
+
+--
+## Examples
+
+--
+## Code snipits
+
+--
+## Written Guides (bookdown!)
+
+--
+## Internal Packages
+
+---
+
+# Internal Docs with Bookdown
+
+```{r guides, echo=FALSE, fig.align='center'}
+knitr::include_graphics("03_images/guide.png", dpi=220 )
+```
+
+---
+
+# Internal Package(s) Can Reduce Friction
+
+```{r, eval=FALSE, echo=TRUE}
+library(our_custom_lib)
+
+con <- connect_our_db("database_name", 
+                  Sys.getenv('UID'), 
+                  Sys.getenv('PWD'))
+```
+
+`connect_our_db` could pick drivers based on OS
+
+---
+# Internal Package(s) Can Reduce Friction
+
+```{r, eval=FALSE, echo=TRUE}
+library(our_custom_lib)
+
+con <- connect_our_db("database_name", 
+                  Sys.getenv('UID'), #<<
+                  Sys.getenv('PWD')) #<<
+```
+
+`connect_our_db` could pick drivers based on OS
+
+---
+# usethis Style Package: 
+
+## https://usethis.r-lib.org
+
+
+```{r usethis, echo=FALSE, fig.align='center'}
+knitr::include_graphics("03_images/usethis.png", dpi=100 )
+```
+
+---
+# usethis Example
+
+```{r, eval=FALSE, echo=TRUE}
+use_test("my-test")
+#> ✓ Adding 'testthat' to Suggests field in DESCRIPTION
+#> ✓ Creating 'tests/testthat/'
+#> ✓ Writing 'tests/testthat.R'
+#> ● Call `use_test()` to initialize a basic test file and open it for editing.
+#> ✓ Writing 'tests/testthat/test-my-test.R'
+#> ● Edit 'tests/testthat/test-my-test.R'
+```
+
+---
+# Internal Example
+
+```{r, eval=FALSE, echo=TRUE}
+use_our_airflow("etl_function")
+#> ✓ Created '00_airflow.r' script
+#> ✓ Built `etl_function_dag.py`
+#> ● Edit `etl_function_dag.py` to set run timing
+```
+
+---
+
+# Typical Org Progression
+
+--
+## Wiki posts on how to do tasks
+
+--
+## Informal "Buddy" Training
+
+--
+## Internal "user guide" on how to do things
+
+--
+## Informal Code Library of Examples
+
+--
+## Formalized Internal Documentation 
+
+--
+## Formal Internal Classes
+---
+
+# James (JD) Long
+
+## Personal EMail - jdlong@gmail.com
+
+## Twitter: @CMastication
+
